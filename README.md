@@ -6,21 +6,21 @@
 
 * first point
 * second point
-* Your Project documentation must explain:
-● the engineering context;
-● the problem being addressed;
-● why the problem matters;
-● the intended use of the computational solution;
-● the limitations of the selected scope.
+Your Project documentation must explain:
+* the engineering context;
+* the problem being addressed;
+* why the problem matters;
+* the intended use of the computational solution;
+* the limitations of the selected scope.
 
 
 ## 2. Inputs and Outputs
 Documentation - must clearly define:
-● the input data accepted by the solution;
-● the expected format, units and domain of the inputs;
-● the outputs produced;
-● the meaning and intended use of each output;
-● how invalid, missing or unsupported inputs are handled.
+* the input data accepted by the solution;
+* the expected format, units and domain of the inputs;
+* the outputs produced;
+* the meaning and intended use of each output;
+* how invalid, missing or unsupported inputs are handled.
 The documentation should address top-level inputs and outputs of the project. Later part of
 the documentation should address specific inputs and output of functions you have
 developed. You can use Docstrings and Documentation generators to assist with this.
@@ -32,25 +32,25 @@ unambiguous.
 Students must develop a functioning and reproducible computational workflow.
 The selected approach may involve any defensible computational method. Students must
 explain:
-● how the method works at an appropriate level;
-● why it was selected;
-● its important assumptions;
-● its settings or parameters;
-● how it was implemented;
-● its known limitations.
+* how the method works at an appropriate level;
+* why it was selected;
+* its important assumptions;
+* its settings or parameters;
+* how it was implemented;
+* its known limitations.
 
 ## 4. Alternative Solutions
 Students must identify and compare credible alternative approaches.
 At least one alternative or baseline solution should be considered. The comparison may
 address:
-● accuracy;
-● robustness;
-● computational time;
-● memory use;
-● implementation complexity;
-● interpretability;
-● scalability;
-● suitability for the intended engineering application.
+* accuracy;
+* robustness;
+* computational time;
+* memory use;
+* implementation complexity;
+* interpretability;
+* scalability;
+* suitability for the intended engineering application.
 The purpose is not to test every possible method. It is to demonstrate that the final approach
 was selected using evidence rather than preference alone.
 
