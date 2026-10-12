@@ -4,8 +4,7 @@
 
 *Italics*
 
-* first point
-* second point
+ 
 Your Project documentation must explain:
 * the engineering context;
 * the problem being addressed;
@@ -57,39 +56,39 @@ was selected using evidence rather than preference alone.
 ## 5. Validation
 Every project must include a clear and justified validation method.
 Depending on the project, validation may use:
-● known ground truth;
-● withheld test data;
-● independent experimental data;
-● repeated measurements;
-● comparison with a trusted benchmark;
-● comparison with an established computational method;
-● cross-validation;
-● physical constraints or conservation relationships;
-● sensitivity and robustness testing;
-● manual inspection supported by defined criteria.
+* known ground truth;
+* withheld test data;
+* independent experimental data;
+* repeated measurements;
+* comparison with a trusted benchmark;
+* comparison with an established computational method;
+* cross-validation;
+* physical constraints or conservation relationships;
+* sensitivity and robustness testing;
+* manual inspection supported by defined criteria.
 Students must explain:
-● what was validated;
-● why the validation method is appropriate;
-● which metrics or acceptance criteria were used;
-● whether the validation information influenced model selection;
-● what the validation cannot establish.
+* what was validated;
+* why the validation method is appropriate;
+* which metrics or acceptance criteria were used;
+* whether the validation information influenced model selection;
+* what the validation cannot establish.
 A numerical result or visually convincing output is not sufficient evidence of accuracy.
 
 
 ## 6. Optimisation and Performance
 Students must analyse and, where appropriate, improve the performance of their solution.
 Relevant considerations may include:
-● solution accuracy;
-● computational runtime;
-● memory requirements;
-● robustness;
-● numerical stability;
-● model or algorithm settings;
-● input resolution;
-● data requirements;
-● repeatability;
-● scalability;
-● trade-offs between performance measures.
+* solution accuracy;
+* computational runtime;
+* memory requirements;
+* robustness;
+* numerical stability;
+* model or algorithm settings;
+* input resolution;
+* data requirements;
+* repeatability;
+* scalability;
+* trade-offs between performance measures.
 Optimisation should be relevant to the project. Students are not expected to optimise every
 possible characteristic.
 Students should make use of profilers, and timing routines, and where appropriate estimates
@@ -102,13 +101,13 @@ solution and justify the final design.
 ## 7. AI Use and Reflection
 Students may use AI tools throughout the project.
 All material AI use must be disclosed. The report must include an AI reflection that explains:
-● which AI tools were used;
-● what they were used for;
-● the approximate level of AI contribution;
-● why AI was used for those tasks;
-● how AI-generated material was checked;
-● which important decisions remained the student's responsibility;
-● any errors, limitations or unhelpful suggestions produced by AI;
-● how AI use affected the student's understanding or workflow.
+* which AI tools were used;
+* what they were used for;
+* the approximate level of AI contribution;
+* why AI was used for those tasks;
+* how AI-generated material was checked;
+* which important decisions remained the student's responsibility;
+* any errors, limitations or unhelpful suggestions produced by AI;
+* how AI use affected the student's understanding or workflow.
 Students remain responsible for all submitted code, results, claims, references and
 engineering decisions. Disclosure does not replace verification.
