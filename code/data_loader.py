@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 def load_and_prepare_dataset(base_dir):
     cleaned_dir = os.path.join(base_dir, "cleaned_data")
-    
+
     def load_and_prepare(filename, value_col):
         path = os.path.join(cleaned_dir, filename)
         df = pd.read_csv(path)
