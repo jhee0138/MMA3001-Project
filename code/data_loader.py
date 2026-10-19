@@ -25,13 +25,21 @@ def load_and_prepare_dataset(base_dir):
     occ_path = "/content/occupancy_extracted/recovered_occupancy.csv"
     if not os.path.exists(occ_path):
         occ_path = os.path.join(base_dir, "cleaned_data_full", "occupancy_full.csv")
-        
+
     # Read the full dataset (no nrows limit) to encompass both Vacant and Occupied samples
     occ_raw = pd.read_csv(occ_path)
     time_col = 'readable_time' if 'readable_time' in occ_raw.columns else 'collecteddate' if 'collecteddate' in occ_raw.columns else occ_raw.columns[0]
     occ_raw[time_col] = pd.to_datetime(occ_raw[time_col], utc=True)
     status_col = 'occupancystatus' if 'occupancystatus' in occ_raw.columns else 'occupancy' if 'occupancy' in occ_raw.columns else occ_raw.columns[1]
-    occ_raw['occupancy_binary'] = occ_raw[status_col].apply(lambda x: 1 if 'Occupied' in str(x) else 0)
+    
+    # FIX: Precise value mapping preventing 'NotOccupied' from matching 'Occupied' substring
+    mapping = {
+        'CurrentlyOccupied': 1,
+        'RecentlyOccupied': 1,
+        'NotOccupied': 0
+    }
+    occ_raw['occupancy_binary'] = occ_raw[status_col].map(mapping).fillna(0).astype(int)
+    
     occ_df = occ_raw[[time_col, 'occupancy_binary']].rename(columns={time_col: 'readable_time'}).set_index('readable_time')
     occ_df = occ_df.groupby(level=0).max()
     occ_df.index = occ_df.index.tz_convert('UTC') if occ_df.index.tz is not None else occ_df.index.tz_localize('UTC')
