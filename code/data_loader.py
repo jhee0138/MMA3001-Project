@@ -70,9 +70,16 @@ def load_and_prepare_dataset(base_dir):
 
     merged_df = co2_df.join([temp_df, hum_df, occ_df], how='outer').sort_index()
     merged_df = merged_df.ffill().fillna(merged_df.median())
+    
+    # Base environmental features
     merged_df['co2_rate_of_change'] = merged_df['co2'].diff().fillna(0.0)
 
-    features = ['co2', 'temperature', 'humidity', 'co2_rate_of_change']
+    # Extract temporal features directly from DatetimeIndex
+    merged_df['hour'] = merged_df.index.hour
+    merged_df['day_of_week'] = merged_df.index.dayofweek
+    merged_df['is_weekend'] = merged_df['day_of_week'].isin([5, 6]).astype(int)
+
+    features = ['co2', 'temperature', 'humidity', 'co2_rate_of_change', 'hour', 'day_of_week', 'is_weekend']
     X = merged_df[features]
     y = merged_df['occupancy_binary'].astype(int)
 
