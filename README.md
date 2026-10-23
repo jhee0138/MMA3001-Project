@@ -7,18 +7,30 @@ humidity) and time-of-day patterns, evaluated against occupancy-sensor ground tr
 
 ```
 code/
-  config.py         all tunable settings (sensor, time bin, label threshold, feature sets)
-  data_loader.py    load, de-duplicate, range-check and align env + occupancy data
-  baseline.py       rule-based baselines (always occupied, fixed schedule, CO2 threshold)
-  train_models.py   decision tree and random forest on "env" or "env+time" features
-  evaluate.py       metrics, time-series cross-validation, timing, confusion matrices
-  main.py           runs the full workflow and writes results/
+  config.py             all tunable settings (sensor, time bin, label threshold, feature sets)
+  data_loader.py        load, de-duplicate, range-check and align env + occupancy data
+  baseline.py           rule-based baselines (always occupied, fixed schedule, CO2 threshold)
+  train_models.py       decision tree and random forest on "env" or "env+time" features
+  evaluate.py           metrics, time-series cross-validation, timing, confusion matrices
+  main.py               runs the full workflow and writes results/
   feature_screening.py  correlation matrix and ablation of every recorded variable
-tests/              pytest unit tests
-cleaned_data_full/  environmental sensor exports (one CSV per variable)
-new_cleaned_data/   occupancy status exports (one file per status)
-results/            generated outputs, one folder per input sensor
+tests/                  pytest unit tests
+data/
+  environment/          environmental sensor readings, one CSV per variable
+  occupancy/            occupancy status events, one file per status
+  raw/                  original environmental export the CSVs were extracted from
+results/                generated outputs, one folder per input sensor
 ```
+
+## Data
+
+Monash smart-building exports. Environmental sensors (`sensorid`) report CO2 (ppm),
+temperature (°C), humidity (%RH), pressure (mb), VOCs (ppb), formaldehyde and particulate
+matter (µg/m³) and battery voltage (V) roughly every 10 minutes; each reading is repeated
+several times in the export and is de-duplicated on load. Occupancy events come from one
+device covering five floor spaces (`floorspaceid`), with status `CurrentlyOccupied`,
+`RecentlyOccupied` or `NotOccupied`. Only sensors 6012002000869 (Mar-Jun 2024) and
+6012002000326 (Sep 2025-Apr 2026) contain usable environmental data.
 
 ## Running
 

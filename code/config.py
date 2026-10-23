@@ -6,8 +6,8 @@ import os
 
 # Repository layout
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENV_DIR = os.path.join(REPO_ROOT, "cleaned_data_full")
-OCC_DIR = os.path.join(REPO_ROOT, "new_cleaned_data")
+ENV_DIR = os.path.join(REPO_ROOT, "data", "environment")
+OCC_DIR = os.path.join(REPO_ROOT, "data", "occupancy")
 RESULTS_DIR = os.path.join(REPO_ROOT, "results")
 
 # Campus local time, used for hour-of-day and weekday features
