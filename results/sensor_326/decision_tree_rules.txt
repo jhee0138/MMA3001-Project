@@ -1,0 +1,94 @@
+|--- hour <= 7.50
+|   |--- hour <= 6.50
+|   |   |--- temperature <= 17.45
+|   |   |   |--- humidity <= 57.25
+|   |   |   |   |--- co2_rate <= -0.85
+|   |   |   |   |   |--- weights: [15.00, 17.00] class: 1
+|   |   |   |   |--- co2_rate >  -0.85
+|   |   |   |   |   |--- weights: [490.00, 170.00] class: 0
+|   |   |   |--- humidity >  57.25
+|   |   |   |   |--- co2 <= 480.50
+|   |   |   |   |   |--- weights: [360.00, 224.00] class: 0
+|   |   |   |   |--- co2 >  480.50
+|   |   |   |   |   |--- weights: [5.00, 20.00] class: 1
+|   |   |--- temperature >  17.45
+|   |   |   |--- hour <= 2.50
+|   |   |   |   |--- co2 <= 406.50
+|   |   |   |   |   |--- weights: [2.00, 4.00] class: 1
+|   |   |   |   |--- co2 >  406.50
+|   |   |   |   |   |--- weights: [1172.00, 343.00] class: 0
+|   |   |   |--- hour >  2.50
+|   |   |   |   |--- humidity <= 71.50
+|   |   |   |   |   |--- weights: [1197.00, 474.00] class: 0
+|   |   |   |   |--- humidity >  71.50
+|   |   |   |   |   |--- weights: [7.00, 13.00] class: 1
+|   |--- hour >  6.50
+|   |   |--- temperature <= 15.72
+|   |   |   |--- humidity <= 67.25
+|   |   |   |   |--- co2_rate <= 0.55
+|   |   |   |   |   |--- weights: [52.00, 59.00] class: 1
+|   |   |   |   |--- co2_rate >  0.55
+|   |   |   |   |   |--- weights: [16.00, 4.00] class: 0
+|   |   |   |--- humidity >  67.25
+|   |   |   |   |--- co2_rate <= -0.52
+|   |   |   |   |   |--- weights: [2.00, 1.00] class: 0
+|   |   |   |   |--- co2_rate >  -0.52
+|   |   |   |   |   |--- weights: [0.00, 16.00] class: 1
+|   |   |--- temperature >  15.72
+|   |   |   |--- day_of_week <= 4.50
+|   |   |   |   |--- co2_rate <= -0.92
+|   |   |   |   |   |--- weights: [16.00, 3.00] class: 0
+|   |   |   |   |--- co2_rate >  -0.92
+|   |   |   |   |   |--- weights: [176.00, 136.00] class: 0
+|   |   |   |--- day_of_week >  4.50
+|   |   |   |   |--- temperature <= 25.45
+|   |   |   |   |   |--- weights: [108.00, 37.00] class: 0
+|   |   |   |   |--- temperature >  25.45
+|   |   |   |   |   |--- weights: [0.00, 7.00] class: 1
+|--- hour >  7.50
+|   |--- hour <= 20.50
+|   |   |--- is_weekend <= 0.50
+|   |   |   |--- hour <= 17.50
+|   |   |   |   |--- humidity <= 53.25
+|   |   |   |   |   |--- weights: [305.00, 2377.00] class: 1
+|   |   |   |   |--- humidity >  53.25
+|   |   |   |   |   |--- weights: [69.00, 1743.00] class: 1
+|   |   |   |--- hour >  17.50
+|   |   |   |   |--- temperature <= 21.95
+|   |   |   |   |   |--- weights: [49.00, 609.00] class: 1
+|   |   |   |   |--- temperature >  21.95
+|   |   |   |   |   |--- weights: [191.00, 455.00] class: 1
+|   |   |--- is_weekend >  0.50
+|   |   |   |--- temperature <= 20.85
+|   |   |   |   |--- hour <= 9.50
+|   |   |   |   |   |--- weights: [173.00, 82.00] class: 0
+|   |   |   |   |--- hour >  9.50
+|   |   |   |   |   |--- weights: [228.00, 538.00] class: 1
+|   |   |   |--- temperature >  20.85
+|   |   |   |   |--- humidity <= 39.75
+|   |   |   |   |   |--- weights: [78.00, 119.00] class: 1
+|   |   |   |   |--- humidity >  39.75
+|   |   |   |   |   |--- weights: [670.00, 388.00] class: 0
+|   |--- hour >  20.50
+|   |   |--- day_of_week <= 2.50
+|   |   |   |--- temperature <= 18.95
+|   |   |   |   |--- humidity <= 54.75
+|   |   |   |   |   |--- weights: [16.00, 59.00] class: 1
+|   |   |   |   |--- humidity >  54.75
+|   |   |   |   |   |--- weights: [73.00, 81.00] class: 1
+|   |   |   |--- temperature >  18.95
+|   |   |   |   |--- humidity <= 62.25
+|   |   |   |   |   |--- weights: [351.00, 187.00] class: 0
+|   |   |   |   |--- humidity >  62.25
+|   |   |   |   |   |--- weights: [19.00, 34.00] class: 1
+|   |   |--- day_of_week >  2.50
+|   |   |   |--- co2 <= 429.75
+|   |   |   |   |--- hour <= 22.50
+|   |   |   |   |   |--- weights: [86.00, 80.00] class: 0
+|   |   |   |   |--- hour >  22.50
+|   |   |   |   |   |--- weights: [51.00, 23.00] class: 0
+|   |   |   |--- co2 >  429.75
+|   |   |   |   |--- temperature <= 20.72
+|   |   |   |   |   |--- weights: [241.00, 120.00] class: 0
+|   |   |   |   |--- temperature >  20.72
+|   |   |   |   |   |--- weights: [383.00, 105.00] class: 0

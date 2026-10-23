@@ -66,6 +66,21 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     metrics.to_csv(os.path.join(out_dir, "test_metrics.csv"), index=False)
     evaluate.plot_confusion_matrices(y_test, predictions, os.path.join(out_dir, "confusion_matrices.png"))
 
+    timeline_models = {name: predictions[name] for name in
+                       [model_name("RandomForest", "env+time"), "Schedule (Mon-Fri 8-18)"]}
+    evaluate.plot_test_timeline(X_test, timeline_models, os.path.join(out_dir, "test_timeline.png"))
+    # Zoom into the first full Monday-to-Sunday week of the test period
+    test_start = X_test.index.min().tz_convert(config.LOCAL_TZ).normalize()
+    first_week = test_start + pd.Timedelta(days=(7 - test_start.dayofweek) % 7)
+    evaluate.plot_test_timeline(X_test, timeline_models, os.path.join(out_dir, "test_timeline_week.png"),
+                                start=first_week, end=first_week + pd.Timedelta("7D"))
+
+    tree = fitted[model_name("DecisionTree", "env+time")]
+    tree_features = train_models.FEATURE_SETS["env+time"]
+    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_top.png"), max_depth=3)
+    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_full.png"),
+                                rules_path=os.path.join(out_dir, "decision_tree_rules.txt"))
+
     rf = fitted[model_name("RandomForest", "env+time")]
     importances = pd.Series(rf.feature_importances_, index=train_models.FEATURE_SETS["env+time"])
     importances.sort_values(ascending=False).to_csv(os.path.join(out_dir, "feature_importance.csv"),

@@ -1,0 +1,94 @@
+|--- hour <= 7.50
+|   |--- temperature <= 22.60
+|   |   |--- hour <= 6.50
+|   |   |   |--- co2 <= 487.75
+|   |   |   |   |--- humidity <= 39.50
+|   |   |   |   |   |--- weights: [90.00, 32.00] class: 0
+|   |   |   |   |--- humidity >  39.50
+|   |   |   |   |   |--- weights: [1022.00, 136.00] class: 0
+|   |   |   |--- co2 >  487.75
+|   |   |   |   |--- humidity <= 44.50
+|   |   |   |   |   |--- weights: [44.00, 46.00] class: 1
+|   |   |   |   |--- humidity >  44.50
+|   |   |   |   |   |--- weights: [95.00, 41.00] class: 0
+|   |   |--- hour >  6.50
+|   |   |   |--- is_weekend <= 0.50
+|   |   |   |   |--- day_of_week <= 0.50
+|   |   |   |   |   |--- weights: [21.00, 8.00] class: 0
+|   |   |   |   |--- day_of_week >  0.50
+|   |   |   |   |   |--- weights: [44.00, 67.00] class: 1
+|   |   |   |--- is_weekend >  0.50
+|   |   |   |   |--- co2_rate <= 1.30
+|   |   |   |   |   |--- weights: [51.00, 10.00] class: 0
+|   |   |   |   |--- co2_rate >  1.30
+|   |   |   |   |   |--- weights: [0.00, 1.00] class: 1
+|   |--- temperature >  22.60
+|   |   |--- co2 <= 446.25
+|   |   |   |--- hour <= 2.50
+|   |   |   |   |--- humidity <= 47.25
+|   |   |   |   |   |--- weights: [34.00, 13.00] class: 0
+|   |   |   |   |--- humidity >  47.25
+|   |   |   |   |   |--- weights: [47.00, 2.00] class: 0
+|   |   |   |--- hour >  2.50
+|   |   |   |   |--- is_weekend <= 0.50
+|   |   |   |   |   |--- weights: [18.00, 26.00] class: 1
+|   |   |   |   |--- is_weekend >  0.50
+|   |   |   |   |   |--- weights: [21.00, 7.00] class: 0
+|   |   |--- co2 >  446.25
+|   |   |   |--- temperature <= 23.20
+|   |   |   |   |--- humidity <= 51.25
+|   |   |   |   |   |--- weights: [93.00, 107.00] class: 1
+|   |   |   |   |--- humidity >  51.25
+|   |   |   |   |   |--- weights: [59.00, 23.00] class: 0
+|   |   |   |--- temperature >  23.20
+|   |   |   |   |--- humidity <= 62.00
+|   |   |   |   |   |--- weights: [61.00, 144.00] class: 1
+|   |   |   |   |--- humidity >  62.00
+|   |   |   |   |   |--- weights: [15.00, 7.00] class: 0
+|--- hour >  7.50
+|   |--- hour <= 21.50
+|   |   |--- co2 <= 442.25
+|   |   |   |--- hour <= 10.50
+|   |   |   |   |--- humidity <= 38.50
+|   |   |   |   |   |--- weights: [15.00, 7.00] class: 0
+|   |   |   |   |--- humidity >  38.50
+|   |   |   |   |   |--- weights: [25.00, 63.00] class: 1
+|   |   |   |--- hour >  10.50
+|   |   |   |   |--- hour <= 20.50
+|   |   |   |   |   |--- weights: [39.00, 360.00] class: 1
+|   |   |   |   |--- hour >  20.50
+|   |   |   |   |   |--- weights: [17.00, 26.00] class: 1
+|   |   |--- co2 >  442.25
+|   |   |   |--- is_weekend <= 0.50
+|   |   |   |   |--- humidity <= 74.25
+|   |   |   |   |   |--- weights: [15.00, 2871.00] class: 1
+|   |   |   |   |--- humidity >  74.25
+|   |   |   |   |   |--- weights: [2.00, 0.00] class: 0
+|   |   |   |--- is_weekend >  0.50
+|   |   |   |   |--- hour <= 8.50
+|   |   |   |   |   |--- weights: [24.00, 22.00] class: 0
+|   |   |   |   |--- hour >  8.50
+|   |   |   |   |   |--- weights: [35.00, 620.00] class: 1
+|   |--- hour >  21.50
+|   |   |--- co2 <= 451.75
+|   |   |   |--- temperature <= 23.35
+|   |   |   |   |--- hour <= 22.50
+|   |   |   |   |   |--- weights: [34.00, 42.00] class: 1
+|   |   |   |   |--- hour >  22.50
+|   |   |   |   |   |--- weights: [61.00, 17.00] class: 0
+|   |   |   |--- temperature >  23.35
+|   |   |   |   |--- co2_rate <= 0.15
+|   |   |   |   |   |--- weights: [11.00, 40.00] class: 1
+|   |   |   |   |--- co2_rate >  0.15
+|   |   |   |   |   |--- weights: [13.00, 11.00] class: 0
+|   |   |--- co2 >  451.75
+|   |   |   |--- hour <= 22.50
+|   |   |   |   |--- co2 <= 486.75
+|   |   |   |   |   |--- weights: [18.00, 95.00] class: 1
+|   |   |   |   |--- co2 >  486.75
+|   |   |   |   |   |--- weights: [1.00, 53.00] class: 1
+|   |   |   |--- hour >  22.50
+|   |   |   |   |--- humidity <= 65.50
+|   |   |   |   |   |--- weights: [48.00, 136.00] class: 1
+|   |   |   |   |--- humidity >  65.50
+|   |   |   |   |   |--- weights: [4.00, 0.00] class: 0
