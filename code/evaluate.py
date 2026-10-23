@@ -221,3 +221,44 @@ def plot_test_timeline(test, predictions_dict, save_path, start=None, end=None,
     fig.tight_layout()
     fig.savefig(save_path, dpi=130)
     plt.close(fig)
+
+
+def plot_confusion_matrix(y_true, y_pred, model_name, save_path):
+    """One model's confusion matrix with counts, row percentages and outcome names.
+
+    Cells use the timeline colours: correct occupied (blue), correct vacant (grey),
+    missed occupancy (red) and false alarm (yellow). Percentages are of each actual class.
+    """
+    cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
+    colours = dict(OUTCOME_STYLES)
+    cells = [[("Correct: vacant", cm[0, 0]), ("False alarm", cm[0, 1])],
+             [("Missed occupancy", cm[1, 0]), ("Correct: occupied", cm[1, 1])]]
+    ink = "#2b2b2b"
+
+    fig, ax = plt.subplots(figsize=(6.4, 5.6))
+    for i, row in enumerate(cells):
+        row_total = sum(count for _, count in row)
+        for j, (label, count) in enumerate(row):
+            fill = colours[label]
+            ax.add_patch(plt.Rectangle((j, 1 - i), 0.97, 0.97, color=fill, alpha=0.9 if label != "Correct: vacant" else 1))
+            text = "white" if label in ("Correct: occupied", "Missed occupancy") else ink
+            ax.text(j + 0.485, 1 - i + 0.60, f"{count:,}", ha="center", va="center", fontsize=22, color=text, weight="bold")
+            ax.text(j + 0.485, 1 - i + 0.38, f"{count / row_total:.0%} of actual", ha="center", va="center", fontsize=10, color=text)
+            ax.text(j + 0.485, 1 - i + 0.18, label, ha="center", va="center", fontsize=10, color=text)
+
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 2)
+    ax.set_xticks([0.485, 1.485], ["Vacant", "Occupied"])
+    ax.set_yticks([1.485, 0.485], [f"Vacant\n(n = {cm[0].sum():,})", f"Occupied\n(n = {cm[1].sum():,})"])
+    ax.set_xlabel("Predicted", color=ink)
+    ax.set_ylabel("Actual", color=ink)
+    ax.tick_params(length=0, labelsize=10, colors=ink)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    m = get_metrics(y_true, y_pred, model_name)
+    ax.set_title(f"{model_name}: recall {m['Recall']:.2f}, precision {m['Precision']:.2f}, F1 {m['F1-Score']:.2f}",
+                 color=ink, fontsize=11, loc="left")
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=150)
+    plt.close(fig)

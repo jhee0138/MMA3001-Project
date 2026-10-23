@@ -75,7 +75,11 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     evaluate.plot_test_timeline(X_test, timeline_models, os.path.join(out_dir, "test_timeline_week.png"),
                                 start=first_week, end=first_week + pd.Timedelta("7D"))
 
-    tree = fitted[model_name("DecisionTree", "env+time")]
+    chosen = model_name("DecisionTree", "env+time")
+    evaluate.plot_confusion_matrix(y_test, predictions[chosen], "Decision tree (env+time), test period",
+                                   os.path.join(out_dir, "confusion_matrix_decision_tree.png"))
+
+    tree = fitted[chosen]
     tree_features = train_models.FEATURE_SETS["env+time"]
     evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_top.png"), max_depth=3)
     evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_full.png"),
