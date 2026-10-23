@@ -50,7 +50,9 @@ count as occupied (default 0.5); `--recent-as-occupied` counts `RecentlyOccupied
 
 Each run writes to `results/sensor_<id>/`: `data_audit.json` (cleaning counts, periods),
 `test_metrics.csv`, `confusion_matrices.png`, `feature_importance.csv`, `cv_summary.csv`,
-`depth_sweep.csv` and `threshold_sensitivity.csv`. `feature_screening.py` writes
+`depth_sweep.csv`, `threshold_sensitivity.csv`, `test_timeline.png` and
+`test_timeline_week.png` (test period over time with each model's errors), and
+`decision_tree_top.png`, `decision_tree_full.png` and `decision_tree_rules.txt`. `feature_screening.py` writes
 `correlation_matrix.png`, `correlation_with_occupancy.csv` and `ablation.csv` to
 `results/sensor_<id>/feature_screening/`.
 
