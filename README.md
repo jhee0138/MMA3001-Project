@@ -13,6 +13,7 @@ code/
   train_models.py   decision tree and random forest on "env" or "env+time" features
   evaluate.py       metrics, time-series cross-validation, timing, confusion matrices
   main.py           runs the full workflow and writes results/
+  feature_screening.py  correlation matrix and ablation of every recorded variable
 tests/              pytest unit tests
 cleaned_data_full/  environmental sensor exports (one CSV per variable)
 new_cleaned_data/   occupancy status exports (one file per status)
@@ -28,6 +29,7 @@ pip install -r requirements.txt
 python code/main.py                # main analysis, sensor 6012002000869 (Mar-Jun 2024)
 python code/main.py --sensor 326   # comparison sensor 6012002000326 (Sep 2025-Apr 2026)
 python code/main.py --quick        # skip cross-validation and sweeps
+python code/feature_screening.py   # screen all recorded variables as candidate inputs
 python -m pytest                   # run the tests
 ```
 
@@ -36,7 +38,9 @@ count as occupied (default 0.5); `--recent-as-occupied` counts `RecentlyOccupied
 
 Each run writes to `results/sensor_<id>/`: `data_audit.json` (cleaning counts, periods),
 `test_metrics.csv`, `confusion_matrices.png`, `feature_importance.csv`, `cv_summary.csv`,
-`depth_sweep.csv` and `threshold_sensitivity.csv`.
+`depth_sweep.csv` and `threshold_sensitivity.csv`. `feature_screening.py` writes
+`correlation_matrix.png`, `correlation_with_occupancy.csv` and `ablation.csv` to
+`results/sensor_<id>/feature_screening/`.
 
 ## 1. Engineering Problem
 

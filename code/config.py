@@ -26,6 +26,20 @@ ENV_VARIABLES = {
     "humidity": ("humidity_full.csv", "%RH", (0.0, 100.0)),
 }
 
+# Every variable the sensors record, used for screening candidate inputs.
+# Battery voltage is device health, kept only as a check that should show no relationship.
+CANDIDATE_ENV_VARIABLES = {
+    **ENV_VARIABLES,
+    "pressure": ("pressure_full.csv", "mb", (900.0, 1100.0)),
+    "voc": ("light_volatile_organic_compounds_full.csv", "ppb", (0.0, 10000.0)),
+    "formaldehyde": ("formaldehyde_full.csv", "ug/m3", (0.0, 1000.0)),
+    "pm1": ("particulate_matter_1_full.csv", "ug/m3", (0.0, 1000.0)),
+    "pm2_5": ("particulate_matter_2.5_full.csv", "ug/m3", (0.0, 1000.0)),
+    "pm4": ("particulate_matter_4_full.csv", "ug/m3", (0.0, 1000.0)),
+    "pm10": ("particulate_matter_10_full.csv", "ug/m3", (0.0, 1000.0)),
+    "battery": ("battery_full.csv", "V", (0.0, 5.0)),
+}
+
 # Occupancy status files and which statuses count as "occupied"
 OCC_STATUSES = ["CurrentlyOccupied", "RecentlyOccupied", "NotOccupied"]
 OCC_FILE_PATTERN = "occupancy_status_{}.csv.gz"
