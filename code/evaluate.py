@@ -7,6 +7,7 @@ import pandas as pd
 from sklearn.metrics import (accuracy_score, balanced_accuracy_score, precision_score,
                              recall_score, f1_score, confusion_matrix)
 from sklearn.model_selection import TimeSeriesSplit
+from sklearn.tree import plot_tree, export_text
 
 import config
 
@@ -91,3 +92,28 @@ def plot_confusion_matrices(y_test, predictions_dict, save_path=None):
         plt.close(fig)
     else:
         plt.show()
+
+
+def plot_decision_tree(model, feature_names, save_path, max_depth=None, rules_path=None):
+    """Draw a fitted decision tree; optionally write its full rule set as text.
+
+    Each box shows the split rule, the number of training bins reaching it, the share
+    of those bins in each class and the majority class. Colour shows the majority
+    class (orange = vacant, blue = occupied) and gets stronger as the box becomes purer.
+    """
+    shown_depth = model.get_depth() if max_depth is None else max_depth
+    fig, ax = plt.subplots(figsize=(max(12, 2.4 * 2 ** shown_depth), 2.6 * (shown_depth + 1)))
+    plot_tree(model, feature_names=feature_names, class_names=['Vacant', 'Occupied'],
+              filled=True, rounded=True, proportion=True, impurity=False, precision=2,
+              max_depth=max_depth, fontsize=9 if shown_depth <= 3 else 6, ax=ax)
+    title = "Decision tree (env+time)"
+    if max_depth is not None and max_depth < model.get_depth():
+        title += f": top {max_depth} of {model.get_depth()} levels"
+    ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(save_path, dpi=130)
+    plt.close(fig)
+
+    if rules_path:
+        with open(rules_path, "w") as f:
+            f.write(export_text(model, feature_names=list(feature_names), show_weights=True))

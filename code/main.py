@@ -66,6 +66,12 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     metrics.to_csv(os.path.join(out_dir, "test_metrics.csv"), index=False)
     evaluate.plot_confusion_matrices(y_test, predictions, os.path.join(out_dir, "confusion_matrices.png"))
 
+    tree = fitted[model_name("DecisionTree", "env+time")]
+    tree_features = train_models.FEATURE_SETS["env+time"]
+    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_top.png"), max_depth=3)
+    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_full.png"),
+                                rules_path=os.path.join(out_dir, "decision_tree_rules.txt"))
+
     rf = fitted[model_name("RandomForest", "env+time")]
     importances = pd.Series(rf.feature_importances_, index=train_models.FEATURE_SETS["env+time"])
     importances.sort_values(ascending=False).to_csv(os.path.join(out_dir, "feature_importance.csv"),
