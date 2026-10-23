@@ -7,7 +7,7 @@ import config
 
 
 def run_baseline_model(X_test, threshold=500.0):
-    """CO2 threshold rule: predict occupied when CO2 exceeds ``threshold`` ppm."""
+    """CO2 threshold rule: predict occupied when CO2 exceeds `threshold` ppm."""
     return (X_test["co2"] > threshold).astype(int)
 
 
@@ -34,7 +34,7 @@ def run_always_occupied(X):
 
 
 def run_schedule_baseline(X, start_hour=config.SCHEDULE_START_HOUR, end_hour=config.SCHEDULE_END_HOUR):
-    """Fixed operating schedule: occupied on weekdays from ``start_hour`` to ``end_hour`` local time.
+    """Fixed operating schedule: occupied on weekdays from `start_hour` to `end_hour` local time.
 
     This mirrors how many buildings run HVAC today, without any sensing.
     """
