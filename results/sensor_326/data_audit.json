@@ -1,0 +1,41 @@
+{
+  "sensor_id": 6012002000326,
+  "bin": "15min",
+  "threshold": 0.5,
+  "co2": {
+    "unit": "ppm",
+    "raw_rows": 58909,
+    "duplicate_rows_removed": 29870,
+    "out_of_range_removed": 0,
+    "valid_rows": 29039
+  },
+  "temperature": {
+    "unit": "degC",
+    "raw_rows": 58909,
+    "duplicate_rows_removed": 29870,
+    "out_of_range_removed": 0,
+    "valid_rows": 29039
+  },
+  "humidity": {
+    "unit": "%RH",
+    "raw_rows": 58909,
+    "duplicate_rows_removed": 29870,
+    "out_of_range_removed": 0,
+    "valid_rows": 29039
+  },
+  "bins_with_env_or_occupancy": 82881,
+  "complete_bins": 18911,
+  "start": "2025-09-11 12:45:00+00:00",
+  "end": "2026-04-22 12:45:00+00:00",
+  "occupied_rate": 0.568293585743747,
+  "train_bins": 15129,
+  "test_bins": 3782,
+  "train_period": [
+    "2025-09-11 12:45:00+00:00",
+    "2026-03-11 05:45:00+00:00"
+  ],
+  "test_period": [
+    "2026-03-11 06:00:00+00:00",
+    "2026-04-22 12:45:00+00:00"
+  ]
+}

@@ -1,8 +1,44 @@
 # MMA3001-Project
 
-## 1. Engineering Problem
+Building-level occupancy detection from low-cost environmental sensors (CO2, temperature,
+humidity) and time-of-day patterns, evaluated against occupancy-sensor ground truth.
 
-*Italics*
+## Repository structure
+
+```
+code/
+  config.py         all tunable settings (sensor, time bin, label threshold, feature sets)
+  data_loader.py    load, de-duplicate, range-check and align env + occupancy data
+  baseline.py       rule-based baselines (always occupied, fixed schedule, CO2 threshold)
+  train_models.py   decision tree and random forest on "env" or "env+time" features
+  evaluate.py       metrics, time-series cross-validation, timing, confusion matrices
+  main.py           runs the full workflow and writes results/
+tests/              pytest unit tests
+cleaned_data_full/  environmental sensor exports (one CSV per variable)
+new_cleaned_data/   occupancy status exports (one file per status)
+results/            generated outputs, one folder per input sensor
+```
+
+## Running
+
+Requires Python 3.10+.
+
+```
+pip install -r requirements.txt
+python code/main.py                # main analysis, sensor 6012002000869 (Mar-Jun 2024)
+python code/main.py --sensor 326   # comparison sensor 6012002000326 (Sep 2025-Apr 2026)
+python code/main.py --quick        # skip cross-validation and sweeps
+python -m pytest                   # run the tests
+```
+
+Options: `--threshold` sets the fraction of spaces that must be occupied for the building to
+count as occupied (default 0.5); `--recent-as-occupied` counts `RecentlyOccupied` as occupied.
+
+Each run writes to `results/sensor_<id>/`: `data_audit.json` (cleaning counts, periods),
+`test_metrics.csv`, `confusion_matrices.png`, `feature_importance.csv`, `cv_summary.csv`,
+`depth_sweep.csv` and `threshold_sensitivity.csv`.
+
+## 1. Engineering Problem
 
  
 Your Project documentation must explain:
