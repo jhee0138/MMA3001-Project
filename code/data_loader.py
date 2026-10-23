@@ -18,7 +18,7 @@ def load_env_variable(name, sensor_id, env_dir=config.ENV_DIR, audit=None):
     Parameters
     ----------
     name : str
-        Key of ``config.ENV_VARIABLES`` (e.g. ``"co2"``).
+        Key of ``config.CANDIDATE_ENV_VARIABLES`` (e.g. ``"co2"``).
     sensor_id : int
         Environmental sensor id (``sensorid`` column).
     env_dir : str
@@ -31,7 +31,7 @@ def load_env_variable(name, sensor_id, env_dir=config.ENV_DIR, audit=None):
     pandas.Series
         Mean value per bin on a regular UTC grid; NaN where there was no valid reading.
     """
-    filename, unit, (lo, hi) = config.ENV_VARIABLES[name]
+    filename, unit, (lo, hi) = config.CANDIDATE_ENV_VARIABLES[name]
     df = pd.read_csv(os.path.join(env_dir, filename), usecols=["sensorid", "value", "readable_time"])
     df = df[df["sensorid"] == sensor_id]
     n_raw = len(df)
@@ -57,9 +57,9 @@ def load_env_variable(name, sensor_id, env_dir=config.ENV_DIR, audit=None):
     return df.set_index("readable_time")["value"].sort_index().resample(config.BIN).mean().rename(name)
 
 
-def load_environment(sensor_id, env_dir=config.ENV_DIR, audit=None):
-    """Load all variables in ``config.ENV_VARIABLES`` for one sensor into one DataFrame."""
-    series = [load_env_variable(name, sensor_id, env_dir, audit) for name in config.ENV_VARIABLES]
+def load_environment(sensor_id, env_dir=config.ENV_DIR, audit=None, variables=config.ENV_VARIABLES):
+    """Load the given variables (default: the model inputs) for one sensor into one DataFrame."""
+    series = [load_env_variable(name, sensor_id, env_dir, audit) for name in variables]
     return pd.concat(series, axis=1)
 
 

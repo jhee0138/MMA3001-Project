@@ -67,3 +67,11 @@ def test_time_series_cv_never_trains_on_future(toy_data):
 
     folds = evaluate.time_series_cv(fit_predict, X, y, n_splits=4)
     assert len(folds) == 4
+
+
+def test_remove_time_pattern_leaves_only_within_hour_variation():
+    import feature_screening
+    data = pd.DataFrame({"hour": [9, 9, 14, 14], "is_weekend": [0, 0, 0, 0],
+                         "x": [10.0, 12.0, 30.0, 30.0]})
+    resid = feature_screening.remove_time_pattern(data["x"], data)
+    assert resid.tolist() == [-1.0, 1.0, 0.0, 0.0]
