@@ -15,6 +15,7 @@ code/
   main.py               runs the full workflow and writes results/
   feature_screening.py  correlation matrix and ablation of every recorded variable
 tests/                  pytest unit tests
+docs/                   HTML documentation of the source code (generated with pdoc)
 data/
   environment/          environmental sensor readings, one CSV per variable
   occupancy/            occupancy status events, one file per status
@@ -60,112 +61,62 @@ regression and classification trees, with `confusion_matrix_regression_tree.png`
 `correlation_matrix.png`, `correlation_with_occupancy.csv` and `ablation.csv` to
 `results/sensor_<id>/feature_screening/`.
 
-## 1. Engineering Problem
+## Documentation
 
- 
-Your Project documentation must explain:
-* the engineering context;
-* the problem being addressed;
-* why the problem matters;
-* the intended use of the computational solution;
-* the limitations of the selected scope.
+HTML documentation of every module and function, generated from the docstrings with
+[pdoc](https://pdoc.dev), is in `docs/`. Open `docs/index.html` in a browser. To regenerate it
+after changing the code:
 
+```
+pip install pdoc
+PYTHONPATH=code python -m pdoc code/config.py code/data_loader.py code/baseline.py \
+    code/train_models.py code/evaluate.py code/feature_screening.py code/main.py -o docs
+```
 
-## 2. Inputs and Outputs
-Documentation - must clearly define:
-* the input data accepted by the solution;
-* the expected format, units and domain of the inputs;
-* the outputs produced;
-* the meaning and intended use of each output;
-* how invalid, missing or unsupported inputs are handled.
-The documentation should address top-level inputs and outputs of the project. Later part of
-the documentation should address specific inputs and output of functions you have
-developed. You can use Docstrings and Documentation generators to assist with this.
-A computational method cannot be evaluated properly unless its inputs and outputs are
-unambiguous.
+On Windows PowerShell, set the path first with `$env:PYTHONPATH="code"` and run the same
+`python -m pdoc ...` command on one line.
 
+## Project summary
 
-## 3. Computational Solution
-Students must develop a functioning and reproducible computational workflow.
-The selected approach may involve any defensible computational method. Students must
-explain:
-* how the method works at an appropriate level;
-* why it was selected;
-* its important assumptions;
-* its settings or parameters;
-* how it was implemented;
-* its known limitations.
+**Problem.** Heating, ventilation and air conditioning often runs on a fixed timetable whether or
+not a building is in use. Demand-controlled ventilation needs to know when people are present.
+This project tests whether a building's existing low-cost environmental sensors, combined with
+time of day, can detect occupancy well enough to support that decision.
 
-## 4. Alternative Solutions
-Students must identify and compare credible alternative approaches.
-At least one alternative or baseline solution should be considered. The comparison may
-address:
-* accuracy;
-* robustness;
-* computational time;
-* memory use;
-* implementation complexity;
-* interpretability;
-* scalability;
-* suitability for the intended engineering application.
-The purpose is not to test every possible method. It is to demonstrate that the final approach
-was selected using evidence rather than preference alone.
+**Inputs.** CO2 (ppm), temperature (°C) and relative humidity (%RH) from sensor 6012002000869,
+plus CO2 rate of change, hour of day, day of week and a weekend flag, in 15-minute intervals
+(3 March – 13 June 2024, 8,887 complete intervals).
 
-## 5. Validation
-Every project must include a clear and justified validation method.
-Depending on the project, validation may use:
-* known ground truth;
-* withheld test data;
-* independent experimental data;
-* repeated measurements;
-* comparison with a trusted benchmark;
-* comparison with an established computational method;
-* cross-validation;
-* physical constraints or conservation relationships;
-* sensitivity and robustness testing;
-* manual inspection supported by defined criteria.
-Students must explain:
-* what was validated;
-* why the validation method is appropriate;
-* which metrics or acceptance criteria were used;
-* whether the validation information influenced model selection;
-* what the validation cannot establish.
-A numerical result or visually convincing output is not sufficient evidence of accuracy.
+**Outputs.** The predicted share of the five monitored floor spaces that are occupied (0–1), and
+an occupied/vacant decision (occupied when the predicted share is at least 0.5).
 
+**Method.** A depth-5 regression tree (recommended) is compared with a classification tree and
+four rule-based baselines: always occupied, a fixed Mon–Fri 08:00–18:00 schedule, and CO2
+thresholds of 500 ppm and 470 ppm (tuned on training data). Data are split chronologically:
+first 80% for training, last 20% for testing.
 
-## 6. Optimisation and Performance
-Students must analyse and, where appropriate, improve the performance of their solution.
-Relevant considerations may include:
-* solution accuracy;
-* computational runtime;
-* memory requirements;
-* robustness;
-* numerical stability;
-* model or algorithm settings;
-* input resolution;
-* data requirements;
-* repeatability;
-* scalability;
-* trade-offs between performance measures.
-Optimisation should be relevant to the project. Students are not expected to optimise every
-possible characteristic.
-Students should make use of profilers, and timing routines, and where appropriate estimates
-of arithmetic intensity and required number of FLOPS associated with a method to help
-explain and justify the performance of their code.
-The report must compare the original or baseline solution with the improved or selected
-solution and justify the final design.
+**Results (test period, 24 May – 13 June 2024).**
 
+| Method | F1 | Recall | Precision | Balanced accuracy |
+| --- | --- | --- | --- | --- |
+| Fixed schedule | 0.604 | 0.450 | 0.916 | 0.694 |
+| CO2 > 470 ppm (tuned) | 0.313 | 0.200 | 0.717 | 0.541 |
+| Classification tree (env + time) | 0.838 | 0.902 | 0.781 | 0.762 |
+| **Regression tree (env + time)** | **0.836** | **0.828** | **0.843** | **0.799** |
 
-## 7. AI Use and Reflection
-Students may use AI tools throughout the project.
-All material AI use must be disclosed. The report must include an AI reflection that explains:
-* which AI tools were used;
-* what they were used for;
-* the approximate level of AI contribution;
-* why AI was used for those tasks;
-* how AI-generated material was checked;
-* which important decisions remained the student's responsibility;
-* any errors, limitations or unhelpful suggestions produced by AI;
-* how AI use affected the student's understanding or workflow.
-Students remain responsible for all submitted code, results, claims, references and
-engineering decisions. Disclosure does not replace verification.
+The regression tree estimates the share of spaces occupied with MAE 0.18, RMSE 0.23 and
+R² 0.49, against R² −0.02 for always predicting the training average. Time-series
+cross-validation on the training period gives F1 0.893 ± 0.011.
+
+**Main limitations.** One usable sensor over about three months; sensor locations are unknown,
+so results are at building level; most predictive power comes from time of day, with CO2 the
+only sensor variable carrying occupancy information beyond the daily cycle.
+
+The full analysis, validation and discussion are in the written project documentation submitted
+with this repository.
+
+## AI use
+
+AI tools (Claude, Claude Code and Gemini in Google Colab) were used during this project for
+scoping discussions, code development and proofreading, as disclosed in full in the AI-use
+reflection of the written documentation.

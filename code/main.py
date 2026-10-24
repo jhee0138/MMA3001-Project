@@ -24,6 +24,7 @@ REGRESSOR = "RegressionTree (env+time)"
 
 
 def model_name(kind, feature_set):
+    """Display name for a model, e.g. ``"DecisionTree (env+time)"``."""
     return f"{kind} ({feature_set})"
 
 
@@ -46,10 +47,12 @@ def make_regression_fit_predict(threshold=config.OCCUPIED_FRACTION_THRESHOLD, **
 
 
 def co2_threshold_fit_predict(X_train, y_train, X_val):
+    """CO2 rule with its threshold tuned on the training data, applied to ``X_val``."""
     return baseline.run_baseline_model(X_val, baseline.fit_co2_threshold(X_train, y_train))
 
 
 def schedule_fit_predict(X_train, y_train, X_val):
+    """Fixed-schedule baseline in ``fit_predict`` form (nothing is learned from the training data)."""
     return baseline.run_schedule_baseline(X_val)
 
 
@@ -181,6 +184,7 @@ def threshold_sensitivity(data, out_dir, thresholds=(0.2, 0.4, 0.5, 0.6, 0.8)):
 
 
 def main():
+    """Parse command-line options, run every analysis and write the outputs to ``results/sensor_<id>/``."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--sensor", choices=sorted(config.SENSOR_IDS), default="869",
                         help="environmental sensor to use as input")
