@@ -140,6 +140,7 @@ def ablation(data, candidates):
 
 
 def main():
+    """Parse command-line options, screen all variables and write the outputs to ``results/sensor_<id>/feature_screening/``."""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--sensor", choices=sorted(config.SENSOR_IDS), default="869")
     args = parser.parse_args()
