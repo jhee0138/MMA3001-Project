@@ -1,6 +1,6 @@
 # MMA3001 Project: Building Occupancy Detection
 
-Building-level occupancy detection from low-cost environmental sensors (CO2, temperature and humidity) and time-of-day patterns, evaluated against occupancy-sensor ground truth.
+Building-level occupancy detection from environmental sensors (CO2, temperature and humidity) and time-of-day patterns, evaluated against occupancy-sensor ground truth.
 
 ## Project summary
 
