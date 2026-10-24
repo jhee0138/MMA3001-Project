@@ -94,7 +94,7 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     evaluate.plot_confusion_matrices(y_test, predictions, os.path.join(out_dir, "confusion_matrices.png"))
 
     timeline_models = {name: predictions[name] for name in
-                       [model_name("DecisionTree", "env+time"), "Schedule (Mon-Fri 8-18)"]}
+                       [REGRESSOR, model_name("DecisionTree", "env+time"), "Schedule (Mon-Fri 8-18)"]}
     evaluate.plot_test_timeline(X_test, timeline_models, os.path.join(out_dir, "test_timeline.png"))
     # Zoom into the first full Monday-to-Sunday week of the test period
     test_start = X_test.index.min().tz_convert(config.LOCAL_TZ).normalize()
@@ -102,21 +102,22 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     evaluate.plot_test_timeline(X_test, timeline_models, os.path.join(out_dir, "test_timeline_week.png"),
                                 start=first_week, end=first_week + pd.Timedelta("7D"))
 
-    chosen = model_name("DecisionTree", "env+time")
-    evaluate.plot_confusion_matrix(y_test, predictions[chosen], "Decision tree (env+time), test period",
-                                   os.path.join(out_dir, "confusion_matrix_decision_tree.png"))
-
-    tree = fitted[chosen]
+    # The recommended model (regression tree) and the classification tree it is compared with
     tree_features = train_models.FEATURE_SETS["env+time"]
-    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_top.png"), max_depth=3)
-    evaluate.plot_decision_tree(tree, tree_features, os.path.join(out_dir, "decision_tree_full.png"),
-                                rules_path=os.path.join(out_dir, "decision_tree_rules.txt"))
+    trees = {"regression_tree": (REGRESSOR, "Regression tree (env+time)"),
+             "decision_tree": (model_name("DecisionTree", "env+time"), "Classification tree (env+time)")}
+    for slug, (name, title) in trees.items():
+        evaluate.plot_confusion_matrix(y_test, predictions[name], f"{title}, test period",
+                                       os.path.join(out_dir, f"confusion_matrix_{slug}.png"))
+        evaluate.plot_decision_tree(fitted[name], tree_features, os.path.join(out_dir, f"{slug}_top.png"),
+                                    max_depth=3, title=title)
+        evaluate.plot_decision_tree(fitted[name], tree_features, os.path.join(out_dir, f"{slug}_full.png"),
+                                    rules_path=os.path.join(out_dir, f"{slug}_rules.txt"), title=title)
 
-    importances = pd.DataFrame({
-        kind: fitted[model_name(kind, "env+time")].feature_importances_ for kind in train_models.MODEL_BUILDERS
-    }, index=tree_features)
-    importances["RegressionTree"] = regressor.feature_importances_
-    importances.sort_values("DecisionTree", ascending=False).to_csv(os.path.join(out_dir, "feature_importance.csv"))
+    importances = pd.DataFrame({"RegressionTree": regressor.feature_importances_,
+                                "DecisionTree": fitted[model_name("DecisionTree", "env+time")].feature_importances_},
+                               index=tree_features)
+    importances.sort_values("RegressionTree", ascending=False).to_csv(os.path.join(out_dir, "feature_importance.csv"))
     return metrics, regression
 
 
@@ -167,7 +168,6 @@ def threshold_sensitivity(data, out_dir, thresholds=(0.2, 0.4, 0.5, 0.6, 0.8)):
         preds = {
             "CO2 threshold (tuned)": co2_threshold_fit_predict(X_train, y_train, X_test),
             "DecisionTree (env+time)": make_fit_predict("DecisionTree", "env+time")(X_train, y_train, X_test),
-            "RandomForest (env+time)": make_fit_predict("RandomForest", "env+time")(X_train, y_train, X_test),
             REGRESSOR: make_regression_fit_predict(threshold)(X_train, y_train, X_test),
         }
         for name, pred in preds.items():

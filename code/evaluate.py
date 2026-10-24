@@ -105,19 +105,21 @@ def plot_confusion_matrices(y_test, predictions_dict, save_path=None):
         plt.show()
 
 
-def plot_decision_tree(model, feature_names, save_path, max_depth=None, rules_path=None):
-    """Draw a fitted decision tree; optionally write its full rule set as text.
+def plot_decision_tree(model, feature_names, save_path, max_depth=None, rules_path=None,
+                       title="Decision tree (env+time)"):
+    """Draw a fitted classification or regression tree; optionally write its rules as text.
 
-    Each box shows the split rule, the number of training bins reaching it, the share
-    of those bins in each class and the majority class. Colour shows the majority
-    class (orange = vacant, blue = occupied) and gets stronger as the box becomes purer.
+    Each box shows the split rule and the share of training bins reaching it. For a
+    classification tree it also shows the class shares and majority class (orange =
+    vacant, blue = occupied); for a regression tree, ``value`` is the mean share of
+    spaces occupied, with darker orange for higher values.
     """
+    is_classifier = hasattr(model, "classes_")
     shown_depth = model.get_depth() if max_depth is None else max_depth
     fig, ax = plt.subplots(figsize=(max(12, 2.4 * 2 ** shown_depth), 2.6 * (shown_depth + 1)))
-    plot_tree(model, feature_names=feature_names, class_names=['Vacant', 'Occupied'],
+    plot_tree(model, feature_names=feature_names, class_names=['Vacant', 'Occupied'] if is_classifier else None,
               filled=True, rounded=True, proportion=True, impurity=False, precision=2,
               max_depth=max_depth, fontsize=9 if shown_depth <= 3 else 6, ax=ax)
-    title = "Decision tree (env+time)"
     if max_depth is not None and max_depth < model.get_depth():
         title += f": top {max_depth} of {model.get_depth()} levels"
     ax.set_title(title)
@@ -127,7 +129,7 @@ def plot_decision_tree(model, feature_names, save_path, max_depth=None, rules_pa
 
     if rules_path:
         with open(rules_path, "w") as f:
-            f.write(export_text(model, feature_names=list(feature_names), show_weights=True))
+            f.write(export_text(model, feature_names=list(feature_names), show_weights=is_classifier))
 
 
 # Outcome colours for the timeline strip (occupied is the positive class)
@@ -268,7 +270,7 @@ def plot_confusion_matrix(y_true, y_pred, model_name, save_path):
         spine.set_visible(False)
 
     m = get_metrics(y_true, y_pred, model_name)
-    ax.set_title(f"{model_name}: recall {m['Recall']:.2f}, precision {m['Precision']:.2f}, F1 {m['F1-Score']:.2f}",
+    ax.set_title(f"{model_name}\nrecall {m['Recall']:.2f}, precision {m['Precision']:.2f}, F1 {m['F1-Score']:.2f}",
                  color=ink, fontsize=11, loc="left")
     fig.tight_layout()
     fig.savefig(save_path, dpi=150)

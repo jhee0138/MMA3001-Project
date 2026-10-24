@@ -1,4 +1,4 @@
-"""Tree-based classifiers for building occupancy detection.
+"""Decision trees for building occupancy detection: a classification tree and a regression tree.
 
 
 Each model is trained on a named feature set so the same code covers the
@@ -6,7 +6,6 @@ environment-only model and the environment + time model.
 """
 import numpy as np
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
-from sklearn.ensemble import RandomForestClassifier
 
 import config
 
@@ -23,17 +22,9 @@ def train_decision_tree(X_train, y_train, max_depth=5, random_state=config.RANDO
     return model
 
 
-def train_random_forest(X_train, y_train, n_estimators=100, max_depth=5, random_state=config.RANDOM_STATE):
-    """Fit a random forest (averages many trees to reduce variance)."""
-    model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth,
-                                   random_state=random_state, n_jobs=-1)
-    model.fit(X_train, y_train)
-    return model
-
 
 MODEL_BUILDERS = {
     "DecisionTree": train_decision_tree,
-    "RandomForest": train_random_forest,
 }
 
 

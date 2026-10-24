@@ -113,13 +113,16 @@ def plot_correlation_matrix(data, candidates, save_path):
 
 
 def ablation(data, candidates):
-    """Cross-validated F1 of a random forest when one variable is added to or dropped from env+time."""
+    """Cross-validated F1 of the regression tree when one variable is added to or dropped from env+time.
+
+    The tree predicts the share of spaces occupied, thresholded to occupied/vacant.
+    """
     base = config.ALL_FEATURES
 
     def cv_f1(features):
         def fit_predict(X_train, y_train, X_val):
-            model = train_models.train_random_forest(X_train[features], y_train)
-            return model.predict(X_val[features])
+            model = train_models.train_regression_tree(X_train[features], X_train["occupied_fraction"])
+            return train_models.classify_fraction(model.predict(X_val[features]))
         folds = evaluate.time_series_cv(fit_predict, data, data["occupied"])
         return folds["F1-Score"].mean(), folds["Balanced Accuracy"].mean()
 
@@ -158,7 +161,7 @@ def main():
 
     abl = ablation(data, candidates)
     abl.to_csv(os.path.join(out_dir, "ablation.csv"), index=False)
-    print("\nAblation (5-fold time-series CV on the training period, random forest):")
+    print("\nAblation (5-fold time-series CV on the training period, regression tree):")
     print(abl.round(3).to_string(index=False))
 
     print(f"\nResults written to {out_dir}")
