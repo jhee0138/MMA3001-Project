@@ -4,7 +4,8 @@
 Each model is trained on a named feature set so the same code covers the
 environment-only model and the environment + time model.
 """
-from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier
 
 import config
@@ -44,3 +45,19 @@ def train_model(kind, feature_set, X_train, y_train, **params):
 def predict(model, feature_set, X):
     """Predict with a model trained by ``train_model`` on the same feature set."""
     return model.predict(X[FEATURE_SETS[feature_set]])
+
+
+def train_regression_tree(X_train, y_fraction, max_depth=5, random_state=config.RANDOM_STATE):
+    """Fit a regression tree to the share of spaces occupied (0 to 1).
+
+    This is the form of decision tree covered in the unit: splits minimise squared
+    error and each leaf returns the mean share of its training intervals.
+    """
+    model = DecisionTreeRegressor(max_depth=max_depth, random_state=random_state)
+    model.fit(X_train, y_fraction)
+    return model
+
+
+def classify_fraction(fraction, threshold=config.OCCUPIED_FRACTION_THRESHOLD):
+    """Turn a predicted share of spaces occupied into the binary occupied label."""
+    return (np.asarray(fraction) >= threshold).astype(int)

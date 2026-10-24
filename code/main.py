@@ -20,6 +20,7 @@ import train_models
 import evaluate
 
 MODELS = [(kind, fs) for kind in train_models.MODEL_BUILDERS for fs in train_models.FEATURE_SETS]
+REGRESSOR = "RegressionTree (env+time)"
 
 
 def model_name(kind, feature_set):
@@ -31,6 +32,16 @@ def make_fit_predict(kind, feature_set, **params):
     def fit_predict(X_train, y_train, X_val):
         model = train_models.train_model(kind, feature_set, X_train, y_train, **params)
         return train_models.predict(model, feature_set, X_val)
+    return fit_predict
+
+
+def make_regression_fit_predict(threshold=config.OCCUPIED_FRACTION_THRESHOLD, **params):
+    """Regression tree on the share of spaces occupied, thresholded to occupied/vacant."""
+    features = train_models.FEATURE_SETS["env+time"]
+
+    def fit_predict(X_train, y_train, X_val):
+        model = train_models.train_regression_tree(X_train[features], X_train["occupied_fraction"], **params)
+        return train_models.classify_fraction(model.predict(X_val[features]), threshold)
     return fit_predict
 
 
@@ -61,6 +72,22 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
         fitted[name] = model
         timings.append({"Model": name, "Fit time (s)": fit_s, "Predict time (s)": predict_s})
 
+    # Regression tree: predicts the share of spaces occupied, then applies the label threshold
+    features = train_models.FEATURE_SETS["env+time"]
+    regressor, fit_s = evaluate.time_call(train_models.train_regression_tree, X_train[features],
+                                          X_train["occupied_fraction"])
+    fraction_pred, predict_s = evaluate.time_call(regressor.predict, X_test[features])
+    predictions[REGRESSOR] = train_models.classify_fraction(fraction_pred)
+    fitted[REGRESSOR] = regressor
+    timings.append({"Model": REGRESSOR, "Fit time (s)": fit_s, "Predict time (s)": predict_s})
+    regression = pd.DataFrame([
+        evaluate.get_regression_metrics(X_test["occupied_fraction"], fraction_pred, REGRESSOR),
+        evaluate.get_regression_metrics(X_test["occupied_fraction"],
+                                        [X_train["occupied_fraction"].mean()] * len(X_test),
+                                        "Training mean (no model)"),
+    ])
+    regression.to_csv(os.path.join(out_dir, "regression_metrics.csv"), index=False)
+
     metrics = evaluate.evaluate_all_models(y_test, predictions)
     metrics = metrics.merge(pd.DataFrame(timings), on="Model", how="left")
     metrics.to_csv(os.path.join(out_dir, "test_metrics.csv"), index=False)
@@ -88,8 +115,9 @@ def compare_on_test(X_train, y_train, X_test, y_test, out_dir):
     importances = pd.DataFrame({
         kind: fitted[model_name(kind, "env+time")].feature_importances_ for kind in train_models.MODEL_BUILDERS
     }, index=tree_features)
+    importances["RegressionTree"] = regressor.feature_importances_
     importances.sort_values("DecisionTree", ascending=False).to_csv(os.path.join(out_dir, "feature_importance.csv"))
-    return metrics
+    return metrics, regression
 
 
 def cross_validate_all(X_train, y_train, out_dir):
@@ -98,6 +126,7 @@ def cross_validate_all(X_train, y_train, out_dir):
                   "CO2 threshold (tuned)": co2_threshold_fit_predict}
     for kind, fs in MODELS:
         candidates[model_name(kind, fs)] = make_fit_predict(kind, fs)
+    candidates[REGRESSOR] = make_regression_fit_predict()
 
     rows = []
     for name, fit_predict in candidates.items():
@@ -114,10 +143,13 @@ def cross_validate_all(X_train, y_train, out_dir):
 def depth_sweep(X_train, y_train, out_dir, depths=(2, 3, 5, 8, 12, None)):
     """Tune tree depth with CV on the training period only (the test set stays untouched)."""
     rows = []
-    for kind in train_models.MODEL_BUILDERS:
+    for kind in list(train_models.MODEL_BUILDERS) + ["RegressionTree"]:
         for depth in depths:
-            folds = evaluate.time_series_cv(make_fit_predict(kind, "env+time", max_depth=depth),
-                                            X_train, y_train)
+            if kind == "RegressionTree":
+                fit_predict = make_regression_fit_predict(max_depth=depth)
+            else:
+                fit_predict = make_fit_predict(kind, "env+time", max_depth=depth)
+            folds = evaluate.time_series_cv(fit_predict, X_train, y_train)
             rows.append({"Model": kind, "max_depth": "None" if depth is None else depth,
                          "F1 mean": folds["F1-Score"].mean(), "F1 std": folds["F1-Score"].std()})
     sweep = pd.DataFrame(rows)
@@ -136,6 +168,7 @@ def threshold_sensitivity(data, out_dir, thresholds=(0.2, 0.4, 0.5, 0.6, 0.8)):
             "CO2 threshold (tuned)": co2_threshold_fit_predict(X_train, y_train, X_test),
             "DecisionTree (env+time)": make_fit_predict("DecisionTree", "env+time")(X_train, y_train, X_test),
             "RandomForest (env+time)": make_fit_predict("RandomForest", "env+time")(X_train, y_train, X_test),
+            REGRESSOR: make_regression_fit_predict(threshold)(X_train, y_train, X_test),
         }
         for name, pred in preds.items():
             row = evaluate.get_metrics(y_test, pred, name)
@@ -179,7 +212,10 @@ def main():
 
     pd.set_option("display.width", 200)
     print("\nHeld-out test period:")
-    print(compare_on_test(X_train, y_train, X_test, y_test, out_dir).round(3).to_string(index=False))
+    metrics, regression = compare_on_test(X_train, y_train, X_test, y_test, out_dir)
+    print(metrics.round(3).to_string(index=False))
+    print("\nRegression tree, share of spaces occupied (test period):")
+    print(regression.round(3).to_string(index=False))
 
     if not args.quick:
         print("\nTime-series cross-validation on the training period:")
