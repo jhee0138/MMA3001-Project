@@ -19,7 +19,7 @@ data/
   environment/          environmental sensor readings, one CSV per variable
   occupancy/            occupancy status events, one file per status
   raw/                  original environmental export the CSVs were extracted from
-results/                generated outputs, one folder per input sensor
+results/                generated outputs, one folder per input sensor; test_report.html = latest test run
 ```
 
 ## Data
@@ -43,6 +43,7 @@ python code/main.py --sensor 326   # comparison sensor 6012002000326 (Sep 2025-A
 python code/main.py --quick        # skip cross-validation and sweeps
 python code/feature_screening.py   # screen all recorded variables as candidate inputs
 python -m pytest                   # run the tests
+python -m pytest --html=results/test_report.html --self-contained-html   # save the test report
 ```
 
 Options: `--threshold` sets the fraction of spaces that must be occupied for the building to
