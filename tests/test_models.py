@@ -75,3 +75,24 @@ def test_remove_time_pattern_leaves_only_within_hour_variation():
                          "x": [10.0, 12.0, 30.0, 30.0]})
     resid = feature_screening.remove_time_pattern(data["x"], data)
     assert resid.tolist() == [-1.0, 1.0, 0.0, 0.0]
+
+
+def test_regression_tree_predicts_share_and_thresholds(toy_data):
+    X, y = toy_data
+    fraction = y * 0.8 + 0.1  # share of spaces occupied: 0.9 when occupied, 0.1 when vacant
+    features = train_models.FEATURE_SETS["env+time"]
+    model = train_models.train_regression_tree(X[features].iloc[:300], fraction.iloc[:300])
+    pred = model.predict(X[features].iloc[300:])
+    assert ((pred >= 0) & (pred <= 1)).all()
+    assert (train_models.classify_fraction(pred) == y.iloc[300:].to_numpy()).mean() > 0.9
+
+
+def test_classify_fraction_threshold_is_inclusive():
+    assert train_models.classify_fraction([0.49, 0.5, 0.8]).tolist() == [0, 1, 1]
+
+
+def test_regression_metrics_known_values():
+    m = evaluate.get_regression_metrics([0.0, 1.0], [0.5, 0.5], "m")
+    assert m["MAE"] == pytest.approx(0.5)
+    assert m["RMSE"] == pytest.approx(0.5)
+    assert m["R2"] == pytest.approx(0.0)

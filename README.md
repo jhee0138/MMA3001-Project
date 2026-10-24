@@ -10,7 +10,7 @@ code/
   config.py             all tunable settings (sensor, time bin, label threshold, feature sets)
   data_loader.py        load, de-duplicate, range-check and align env + occupancy data
   baseline.py           rule-based baselines (always occupied, fixed schedule, CO2 threshold)
-  train_models.py       decision tree and random forest on "env" or "env+time" features
+  train_models.py       decision tree and random forest classifiers, and a regression tree
   evaluate.py           metrics, time-series cross-validation, timing, confusion matrices
   main.py               runs the full workflow and writes results/
   feature_screening.py  correlation matrix and ablation of every recorded variable
@@ -51,7 +51,8 @@ count as occupied (default 0.5); `--recent-as-occupied` counts `RecentlyOccupied
 
 Each run writes to `results/sensor_<id>/`: `data_audit.json` (cleaning counts, periods),
 `test_metrics.csv`, `confusion_matrices.png`, `feature_importance.csv`, `cv_summary.csv`,
-`depth_sweep.csv`, `threshold_sensitivity.csv`, `test_timeline.png` and
+`depth_sweep.csv`, `threshold_sensitivity.csv`, `regression_metrics.csv` (regression tree
+MAE, RMSE and R² for the share of spaces occupied), `test_timeline.png` and
 `test_timeline_week.png` (test period over time with each model's errors), and
 `decision_tree_top.png`, `decision_tree_full.png` and `decision_tree_rules.txt`. `feature_screening.py` writes
 `correlation_matrix.png`, `correlation_with_occupancy.csv` and `ablation.csv` to
